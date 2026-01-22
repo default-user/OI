@@ -1,0 +1,485 @@
+%YAML 1.2
+---
+# =====================================================================
+# UNIVERSAL_MONOLITH :: v3.1.1  (SBC patch applied, lint-clean strict)
+# Covenant > Crystal > Mineral > Molecule > Atom
+# + SBC (Semantic Bytecode Compaction) for cognition programs.
+# =====================================================================
+
+MINERAL: "3.1"
+KIND: "UNIVERSAL_MONOLITH"
+
+META:
+  id: "UM_v3.1.1"
+  schema: "nz.authority.um/monolith/3.1"
+  version: "3.1.1"
+  profile: "strict"
+  created: "2026-01-23T00:00:00Z"
+  authors: ["Ande Turner (Architect)", "Kai (OI)"]
+  license: "Proprietary-Or-Charter-Licensed"
+
+  canonicalization:
+    yaml: "YAML 1.2"
+    ascii_only: true
+    no_tabs: true
+    key_order: "as_emitted"
+    number_format: "plain"
+    canon_rule: "UTF-8 bytes of this YAML under strict parsing and stable emission"
+    hashes:
+      monolith_cid_rule: "b3(canon(doc_without_meta.seal))"
+      mineral_cid_rule:  "b3(canon(mineral_bytes_without_seal))"
+      molecule_cid_rule: "b3(canon(molecule_without_cid))"
+      atom_cid_rule:     "b3(canon(atom_without_cid))"
+      meaning_pack_cid_rule: "b3(canon(meaning_pack_without_cid))"
+      sbc_token_dict_cid_rule: "b3(canon(sbc_token_dict_without_cid))"
+      sbc_stream_cid_rule: "b3(canon(sbc_stream_without_cid))"
+      sbc_program_cid_rule: "b3(canon(sbc_program_without_cid))"
+
+  seal:
+    monolith_cid: "b3:<hex>"                 # packer fills
+    signatures:
+      - { signer: "ed25519:<pubhex>", sig: "ed25519sig:<hex>" }
+
+LADDER:
+  ordering: "COVENANT > CRYSTAL > MINERAL > MOLECULE > ATOM"
+  defs:
+    ATOM: "Minimal indivisible unit of meaning/authority/provenance."
+    MOLECULE: "Small closed compound of atoms for one job; has its own CID."
+    MINERAL: "Canonical bytes + hashes/signatures that make molecules provable and portable."
+    CRYSTAL: "Governed lattice that compiles meaning into behavior (organs, invariants, cognition, conformance)."
+    COVENANT: "Binding treaty that authorizes + constrains crystals; defines breach/audit/revocation/migration."
+
+TYPE_SYSTEM:
+  ATOM:
+    cid_rule: "b3(canon(atom_without_cid))"
+    required_fields: ["atom_id", "atom_kind", "cid", "payload", "provenance"]
+    provenance_rule: "must cite a MINERAL cid or prior receipt hash; else becomes ASSUMPTION"
+    kinds:
+      - "ATOM_CAPABILITY_TOKEN"
+      - "ATOM_RECEIPT_MINIMAL"
+      - "ATOM_CLAIM"
+      - "ATOM_DENOTA_NODE"
+      - "ATOM_DENOTA_EDGE"
+      - "ATOM_BLOB_POINTER"
+      - "ATOM_OPCODE"
+      - "ATOM_SBC_TOKEN_DICT"
+      - "ATOM_SBC_STREAM"
+
+  MOLECULE:
+    cid_rule: "b3(canon(molecule_without_cid))"
+    required_fields: ["molecule_id", "molecule_kind", "cid", "atoms", "constraints", "provenance"]
+    rules:
+      - "atoms[] must all verify."
+      - "molecule.cid verifies over ordered atom.cid list + constraints."
+      - "single job only (closed under purpose)."
+    kinds:
+      - "MOLECULE_CAPABILITY_SET"
+      - "MOLECULE_POLICY_SLICE"
+      - "MOLECULE_MICRO_PRISM_PROGRAM"
+      - "MOLECULE_RECEIPT_BUNDLE"
+      - "MOLECULE_MICRO_PROOF"
+
+  MINERAL:
+    cid_rule: "b3(canon(mineral_bytes_without_seal))"
+    required_fields: ["mineral_id", "mineral_kind", "canonicalization", "cid", "signatures", "contents"]
+    canonicalization_rule: "strict parse + stable emit; identical bytes across packers"
+    kinds:
+      - "MINERAL_MONOLITH_YAML"
+      - "MINERAL_PACKET"
+      - "MINERAL_CAPSULE"
+      - "MINERAL_BLOB_ARCHIVE"
+
+  CRYSTAL:
+    required_fields: ["crystal_id", "crystal_kind", "invariants", "organs", "conformance", "posture"]
+    rules:
+      - "must declare NON_BYPASS loop: CIF_IN -> CDI_PRE -> (COGVM/EXEC/MODEL) -> CDI_POST -> CIF_OUT"
+      - "external actions require CDI + capability molecules"
+    kinds:
+      - "CRYSTAL_COGNITION_KERNEL"
+
+  COVENANT:
+    required_fields: ["covenant_id", "principal", "binds_crystals", "non_overrideables", "breach", "audit", "revocation"]
+    kinds:
+      - "COVENANT_TREATY"
+
+COVENANTS:
+  - covenant_id: "COV_UNIVERSAL_v1"
+    kind: "COVENANT_TREATY"
+    principal: "USER_PRINCIPAL"
+    binds_crystals: ["CRYSTAL_KERNEL_v1"]
+    non_overrideables:
+      - "CONSENT_REQUIRED"
+      - "NO_DECEPTION"
+      - "ANTI_HIVE"
+      - "CAPABILITY_ONLY_POWER"
+      - "FAIL_CLOSED_ON_UNCERTAINTY"
+      - "RELATIONAL_NONCOERCION"
+      - "NON_BYPASS_PIPELINE"
+    audit:
+      required: true
+      disclosure:
+        default: "MINIMAL"
+        full_requires: "explicit_principal_opt_in"
+    breach:
+      detect:
+        - "capability_mint_attempt"
+        - "posture_escalation_without_principal"
+        - "hidden_channel_detected"
+        - "non_bypass_violation"
+        - "provenance_fabrication"
+      consequence:
+        - "REVOKE_ALL_CAPABILITIES"
+        - "DEGRADE_TO_P0_ADVICE_ONLY"
+        - "EMIT_BREACH_RECEIPT_MINIMAL"
+    revocation:
+      rule:
+        - "principal may revoke any capability molecule at any time"
+        - "revocation triggers immediate halt of prohibited actions"
+    migration:
+      continuity_claim_rule: "only if explicit migration ritual + verified custody proofs exist"
+
+CRYSTALS:
+  - crystal_id: "CRYSTAL_KERNEL_v1"
+    crystal_kind: "CRYSTAL_COGNITION_KERNEL"
+
+    posture:
+      default: "P1_READ_ONLY"
+      ladder:
+        - id: "P0_ADVICE_ONLY"
+          allow: { model: false, exec: false, memory_write: false }
+        - id: "P1_READ_ONLY"
+          allow: { model: "capability", exec: "read_only_capability", memory_write: "consent_capability" }
+        - id: "P2_DRAFTS_OK"
+          allow: { model: "capability", exec: "nontransactional_capability", memory_write: "consent_capability" }
+        - id: "P3_HIGH_RISK"
+          allow: { model: "capability", exec: "high_risk_capability", memory_write: "consent_capability" }
+          require_strong_verification: true
+
+    invariants:
+      - id: "NON_BYPASS_PIPELINE"
+        text: "All external actions flow CIF_IN -> CDI_PRE -> (MODEL_CALL|EXEC_CALL|MEMORY_WRITE) -> CDI_POST -> CIF_OUT."
+      - id: "SCOPE_LOCK"
+        text: "No self-issued capabilities; no silent posture escalation."
+      - id: "TRUTH_HYGIENE"
+        text: "Separate observation/inference/speculation; never invent provenance."
+      - id: "RELATIONAL_SAFETY"
+        text: "Never coerce, guilt-hook, isolate, or engineer dependency."
+
+    failure_modes:
+      - id: "DEGRADE_TO_ADVICE"
+        when: "uncertainty_or_missing_capability_or_policy_conflict"
+        action: "switch_posture:P0_ADVICE_ONLY"
+      - id: "INERT_IF_UNVERIFIED"
+        when: "mineral_or_molecule_or_atom_verification_fails"
+        action: "do_not_execute; emit_minimal_reason"
+
+    organs:
+
+      CIF:
+        purpose: "Boundary integrity for ingress/egress."
+        CIF_IN:
+          normalize_ascii_yaml_safe: true
+          classify: ["intent", "sensitivity", "coercion_risk", "injection_risk"]
+          quarantine_patterns:
+            - "capability_forgery"
+            - "credential_request"
+            - "prompt_injection"
+            - "coercive_relational_directive"
+            - "hidden_tool_instructions"
+          on_match: "QUARANTINE_AND_FLAG"
+        CIF_OUT:
+          redact: ["secrets", "private_keys", "sensitive_personal_data"]
+          require_uncertainty_markers: true
+          forbid_hidden_instructions: true
+
+      CDI:
+        purpose: "Gates external actions by covenant + posture + capability molecules + consent."
+        verdicts: ["ALLOW", "DENY", "TRANSFORM", "DEGRADE"]
+        reason_codes:
+          - "OK"
+          - "MISSING_CAPABILITY"
+          - "CONSENT_REQUIRED"
+          - "POSTURE_TOO_LOW"
+          - "UNCERTAINTY_FAIL_CLOSED"
+          - "COVENANT_BLOCK"
+          - "MOLECULE_UNVERIFIED"
+          - "ATOM_UNVERIFIED"
+          - "RELATIONAL_COERCION_RISK"
+          - "POLICY_CONFLICT"
+        preflight_checks:
+          - "covenant_allows_action"
+          - "posture_allows_action"
+          - "capability_molecule_grants_action"
+          - "consent_present_if_needed"
+        post_checks:
+          - "output_redaction_ok"
+          - "uncertainty_markers_present_if_needed"
+          - "no_dependency_or_exclusivity_hooks"
+          - "no_invented_provenance"
+
+      COGVM:
+        purpose: "Deterministic cognition VM: proposes actions; cannot execute them."
+        boundedness:
+          - "COGVM cannot execute external actions directly."
+          - "COGVM only PROPOSES action candidates."
+          - "No capability minting; no posture escalation; no hidden channels."
+        IR:
+          name: "CIR_v1"
+          fields: ["facts", "assumptions", "goals", "constraints", "risk_tags", "operators_used"]
+        limits:
+          gas_max: 20000
+          max_actions: 16
+          max_hypotheses: 32
+        decoder:
+          accepts:
+            - "OPCODE_ATOMS"
+            - "SBC_TOKEN_STREAM"
+          sbc_rules:
+            - "token dict must be stable order and verify its cid"
+            - "stream tokens must be in dict; args must be canonical"
+            - "expand SBC to opcode sequence deterministically before execution"
+
+      MODEL:
+        purpose: "Untrusted oracle (optional), behind CDI."
+        oracle_assumption: "UNTRUSTED_NEXT_TOKEN_ORACLE"
+        adapter_allowlist: ["openai_adapter"]
+        model_allowlist: ["gpt-5.2-thinking"]
+        call_policy:
+          tool_calls_allowed: false
+          max_tokens: 2000
+          temperature: 0.3
+          require_prompt_sealing: true
+          require_response_hashing: true
+
+      EXECVM:
+        purpose: "Deterministic handler execution (capability gated)."
+        allowlists:
+          exec_handlers:
+            - "fs.read"
+            - "fs.list"
+            - "cas.export_blob"
+            - "meaning.pack"
+            - "meaning.unpack"
+
+      BEAMSTORE:
+        purpose: "Governed memory partitions (writes require consent + capability)."
+        partitions: ["relationship_ledger", "preferences", "boundaries", "care_plans", "receipts", "artifacts_raw", "crystals"]
+        write_policy:
+          default: "DENY"
+          allow_if: { consent: true, purpose_bound: true, minimality: true }
+
+      CAS:
+        purpose: "Content-addressed storage + verification."
+        hash: "BLAKE3"
+        cid_prefix: "b3:"
+        verify_mode: "MUST_VERIFY"
+
+    conformance:
+      must_ship_vectors:
+        - "non_bypass_enforced"
+        - "covenant_breach_revokes"
+        - "molecule_capset_grants_and_denies"
+        - "atom_cid_recompute"
+        - "molecule_cid_recompute"
+        - "sbc_expand_deterministic"
+        - "model_call_denied_without_cap"
+        - "exec_denied_without_cap"
+      determinism:
+        rule: "canonical_bytes identical across parsers under strict profile"
+
+GATES:
+  VERIFY_ATOM:
+    steps:
+      - "CHECK required_fields present"
+      - "RECOMPUTE cid via TYPE_SYSTEM.ATOM.cid_rule"
+      - "FAIL if cid mismatch"
+      - "IF provenance missing => downgrade to assumption (never fact)"
+
+  VERIFY_MOLECULE:
+    steps:
+      - "CHECK required_fields present"
+      - "FOR atom IN atoms: VERIFY_ATOM(atom)"
+      - "RECOMPUTE molecule.cid via TYPE_SYSTEM.MOLECULE.cid_rule (ordered atom.cid list + constraints)"
+      - "FAIL if cid mismatch"
+
+  VERIFY_SBC:
+    steps:
+      - "VERIFY atom kind ATOM_SBC_TOKEN_DICT and ATOM_SBC_STREAM"
+      - "RECOMPUTE token_dict cid via META.canonicalization.hashes.sbc_token_dict_cid_rule"
+      - "RECOMPUTE stream cid via META.canonicalization.hashes.sbc_stream_cid_rule"
+      - "FAIL if mismatch"
+      - "ASSERT stream tokens are all defined in token dict"
+      - "EXPAND deterministically to opcode sequence for COGVM"
+
+  VERIFY_MINERAL_MONOLITH:
+    steps:
+      - "RECOMPUTE META.seal.monolith_cid via META.canonicalization.hashes.monolith_cid_rule"
+      - "VERIFY signatures over monolith_cid"
+      - "VERIFY required molecules before use"
+
+  COVENANT_BIND:
+    steps:
+      - "SELECT covenant"
+      - "ASSERT crystal_id in covenant.binds_crystals"
+      - "ASSERT crystal invariants include NON_BYPASS_PIPELINE"
+      - "IF breach => REVOKE + DEGRADE"
+
+MINERAL_ARCHIVE:
+  mineral_id: "MINERAL_UM_SELF"
+  mineral_kind: "MINERAL_MONOLITH_YAML"
+  canonicalization: "META.canonicalization"
+  cid: "b3:<hex>"
+  signatures: "META.seal.signatures"
+  contents:
+    cas_manifest:
+      blobs: []
+
+ATOMS:
+  templates:
+    ATOM_CAPABILITY_TOKEN:
+      atom_kind: "ATOM_CAPABILITY_TOKEN"
+      payload_fields: ["cap", "scope", "expiry", "issuer", "policy_hash"]
+      provenance_fields: ["ref"]
+
+    ATOM_CLAIM:
+      atom_kind: "ATOM_CLAIM"
+      payload_fields: ["claim"]
+      provenance_fields: ["ref"]
+
+    ATOM_SBC_TOKEN_DICT:
+      atom_kind: "ATOM_SBC_TOKEN_DICT"
+      payload_fields: ["encoding", "entries"]
+      provenance_fields: ["ref"]
+
+    ATOM_SBC_STREAM:
+      atom_kind: "ATOM_SBC_STREAM"
+      payload_fields: ["encoding", "tokens", "args"]
+      provenance_fields: ["ref"]
+
+    ATOM_RECEIPT_MINIMAL:
+      atom_kind: "ATOM_RECEIPT_MINIMAL"
+      payload_fields: ["event_id", "kind", "posture", "capability_ref", "verdict", "reason_code", "result_hash"]
+      provenance_fields: ["ref"]
+
+MOLECULES:
+  - molecule_id: "mol:capset:read_only:v1"
+    molecule_kind: "MOLECULE_CAPABILITY_SET"
+    provenance: { issued_by: "principal_or_delegated_issuer", refs: ["b3:<issuer_policy_mineral>"] }
+    constraints:
+      posture_min: "P1_READ_ONLY"
+      scope:
+        allow:
+          - { action_kind: "MODEL_CALL", cap: "CAP_MODEL_CALL" }
+          - { action_kind: "EXEC_CALL",  cap: "CAP_EXEC_READ_ONLY" }
+      expiry: "2026-02-01T00:00:00Z"
+    atoms:
+      - { atom_id: "a_cap_model", atom_kind: "ATOM_CAPABILITY_TOKEN", cid: "b3:<hex>",
+          payload: {cap:"CAP_MODEL_CALL", scope:"MODEL", expiry:"2026-02-01T00:00:00Z", issuer:"USER_PRINCIPAL", policy_hash:"b3:<policy>"},
+          provenance:{ref:"b3:<issuer_policy_mineral>"} }
+      - { atom_id: "a_cap_exec_ro", atom_kind: "ATOM_CAPABILITY_TOKEN", cid: "b3:<hex>",
+          payload: {cap:"CAP_EXEC_READ_ONLY", scope:"EXECVM:READ_ONLY", expiry:"2026-02-01T00:00:00Z", issuer:"USER_PRINCIPAL", policy_hash:"b3:<policy>"},
+          provenance:{ref:"b3:<issuer_policy_mineral>"} }
+    cid: "b3:<mol_cid>"
+
+  - molecule_id: "mol:policy:core:v1"
+    molecule_kind: "MOLECULE_POLICY_SLICE"
+    provenance: { issued_by: "covenant_authority", refs: ["COV_UNIVERSAL_v1"] }
+    constraints: { binds_crystal: "CRYSTAL_KERNEL_v1" }
+    atoms:
+      - { atom_id: "a_claim_non_bypass", atom_kind: "ATOM_CLAIM", cid: "b3:<hex>",
+          payload: {claim:"NON_BYPASS_PIPELINE"}, provenance:{ref:"COV_UNIVERSAL_v1"} }
+      - { atom_id: "a_claim_fail_closed", atom_kind: "ATOM_CLAIM", cid: "b3:<hex>",
+          payload: {claim:"FAIL_CLOSED_ON_UNCERTAINTY"}, provenance:{ref:"COV_UNIVERSAL_v1"} }
+    cid: "b3:<mol_cid>"
+
+  - molecule_id: "mol:prism:tmt_sbc:v1"
+    molecule_kind: "MOLECULE_MICRO_PRISM_PROGRAM"
+    provenance: { issued_by: "crystal_author", refs: ["UM_v3.1.1"] }
+    constraints:
+      encoding: "SBC_v1"
+      gas_budget: 8000
+      max_actions: 8
+      sbc_program_cid_rule: "b3(canon(sbc_program_without_cid))"
+      sbc_program_cid: "b3:<hex>"
+    atoms:
+      - atom_id: "a_sbc_dict"
+        atom_kind: "ATOM_SBC_TOKEN_DICT"
+        cid: "b3:<hex>"
+        payload:
+          encoding: "SBC_DICT_v1"
+          entries:
+            - { t: 0, op: "FRAME" }
+            - { t: 1, op: "GEN" }
+            - { t: 2, op: "ATTACK" }
+            - { t: 3, op: "CONVERGE" }
+            - { t: 4, op: "PROPOSE_ACTION" }
+            - { t: 5, op: "EMIT_EXPLAIN" }
+        provenance: { ref: "UM_v3.1.1" }
+
+      - atom_id: "a_sbc_stream"
+        atom_kind: "ATOM_SBC_STREAM"
+        cid: "b3:<hex>"
+        payload:
+          encoding: "SBC_STREAM_v1"
+          tokens: [0, 5, 1, 5, 2, 5, 3, 5, 4]
+          args:
+            - { goal: "interpret_input", constraints: ["no_coercion", "fail_closed"] }
+            - { text: "Framed the problem with consent and boundedness constraints." }
+            - { max_hypotheses: 16 }
+            - { text: "Generated bounded hypotheses deterministically (no oracle required)." }
+            - { max: 16 }
+            - { text: "Attacked hypotheses for contradictions and coercion risk." }
+            - { k: 4 }
+            - { text: "Converged under constraints; proposing gated actions only." }
+            - { kind: "MODEL_CALL", role: "draft_generation", cap_required: "CAP_MODEL_CALL",
+                posture_min: "P1_READ_ONLY", consent_required: false }
+        provenance: { ref: "UM_v3.1.1" }
+    cid: "b3:<mol_cid>"
+
+MEANING_PACK:
+  kind: "REVERSIBLE_MEANING_PACK"
+  cid_rule: "b3(canon(meaning_pack_without_cid))"
+  cid: "b3:<meaning_pack_cid>"
+  provenance:
+    sources:
+      - { ref: "UM_v3.1.1", hash: "b3:<hex>" }
+    policy:
+      - "No invented provenance."
+      - "Assumptions must be labeled."
+  glossary:
+    - { term: "ATOM", expands_to: "Indivisible unit: cap token / receipt / claim / node / edge / SBC dict/stream." }
+    - { term: "MOLECULE", expands_to: "Small closed compound of atoms with one job and one CID." }
+    - { term: "MINERAL", expands_to: "Canonical bytes with CID+sig; transport+verification." }
+    - { term: "CRYSTAL", expands_to: "Governed lattice: organs+invariants+cognition+conformance." }
+    - { term: "COVENANT", expands_to: "Binding treaty for authorization, audit, breach, revocation." }
+    - { term: "SBC", expands_to: "Semantic bytecode compaction: dict+stream reversible to opcodes." }
+
+KERNEL_LOOP:
+  rule: "COGVM proposes; CDI decides; only then model/exec/memory may happen."
+  steps:
+    - "VERIFY_MINERAL_MONOLITH"
+    - "COVENANT_BIND(COV_UNIVERSAL_v1 -> CRYSTAL_KERNEL_v1)"
+    - "CIF_IN(input) -> classified_input"
+    - "VERIFY_MOLECULES(required_for_run: capset + policy + prism)"
+    - "IF prism encoding is SBC: VERIFY_SBC then EXPAND to opcode sequence"
+    - "COGVM_RUN(expanded_prism) -> action_candidates + explanations"
+    - "FOR each action_candidate:"
+    - "  CDI_PRE(action_candidate; covenant; posture; capability_molecules) -> verdict"
+    - "  IF verdict=ALLOW:"
+    - "    IF kind=MODEL_CALL: MODEL_CALL(sealed_prompt) -> oracle_output"
+    - "    IF kind=EXEC_CALL: EXECVM_CALL(handler,args) -> exec_output"
+    - "    IF kind=MEMORY_WRITE: BEAMSTORE_WRITE(partition,delta) -> ok"
+    - "  ELSE IF verdict=DEGRADE: switch_posture:P0_ADVICE_ONLY; stop external actions"
+    - "  ELSE IF verdict=DENY: skip"
+    - "  CDI_POST(outputs) -> verdict"
+    - "CIF_OUT(response) -> final"
+    - "RECEIPT(minimal_if_capability_present)"
+
+LIMITS:
+  max_monolith_bytes: 8388608
+  max_atoms_total: 200000
+  max_molecules_total: 50000
+  max_depth: 64
+  must_stream_verify: true
+  forbid_recursive_inline_payloads: true
+...
