@@ -1,5 +1,5 @@
 /*
- * OI_RUNTIME_HARDENED_MONOLITH.java — “God code” level (single-file Java)
+ * flourish.java — “God code” level (single-file Java)
  *
  * WHAT THIS IS:
  * A hardened, fail-closed OI action gateway with:
@@ -14,8 +14,8 @@
  *   - Fail-closed by default
  *
  * BUILD / RUN (Java 17+; Java 21 recommended):
- *   javac OI_RUNTIME_HARDENED_MONOLITH.java
- *   java --add-modules jdk.httpserver OI_RUNTIME_HARDENED_MONOLITH
+ *   javac flourish.java
+ *   java --add-modules jdk.httpserver Flourish
  *
  * SERVER:
  *   http://127.0.0.1:8088
@@ -45,7 +45,7 @@ import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.*;
 
-public class OI_RUNTIME_HARDENED_MONOLITH {
+public class Flourish {
 
   // ------------------------- Config -------------------------
   static final class Config {
