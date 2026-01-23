@@ -39,6 +39,9 @@ go test -race ./...
 # Run conformance tests
 go test ./tools/conformance/... -v
 
+# Run the corridor CLI
+go run ./cmd/oi-kernel --input "hello corridor"
+
 # Run specific module tests
 go test ./internal/kernel -v
 go test ./internal/adapters -v
